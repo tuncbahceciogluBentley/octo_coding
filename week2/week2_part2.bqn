@@ -1,2 +1,1 @@
-IsP ← {2=+´0=(1+↕)⊸|𝕩}
-•Show +´(IsP¨⊸×)•ParseFloat¨•file.Lines⊑•args
+•Show +´((2=(+´0=(1+↕)⊸|))¨⊸×)•ParseFloat¨•file.Lines⊑•args

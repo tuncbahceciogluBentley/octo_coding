@@ -1,35 +1,33 @@
 import json
 import sys
 
+def calculate_average_length(graph, start, end, tolerance=1e-8):
+    # Initialize expected lengths for all nodes to 0
+    expected_length = {node: 0 for node in graph}
+    expected_length[end] = 0  # End node has zero length
 
-def find_all_paths(graph, start, end):
-    # Stack entries: (node, current_prob, current_length, visited_set)
-    stack = [(start, 1, 0, set())]
-    total_weighted_sum = 0
+    while True:
+        max_change = 0
+        for node in graph:
+            if node == end:
+                continue
 
-    while stack:
-        node, current_prob, current_length, visited = stack.pop()
+            # Compute the new expected length for this node
+            new_length = sum(
+                prob * (1 + expected_length[neighbor])
+                for neighbor, prob in graph[node].items()
+            )
 
-        # If this node is already in the current path, skip to avoid cycles
-        if node in visited:
-            continue
+            # Update the change and the expected length
+            max_change = max(max_change, abs(new_length - expected_length[node]))
+            expected_length[node] = new_length
 
-        # Add this node to the visited set for the current path
-        visited = visited | {node}
+        # Check for convergence
+        if max_change < tolerance:
+            break
 
-        # If reached the end node, calculate the weighted sum and add it
-        THRESHOLD = float(sys.argv[2])
-        if (node == end) or (current_length > 1) and (current_prob * (current_length - 1)) < THRESHOLD:
-            #print(f"Pushing ( {current_prob * (current_length - 1)}, {visited}, {node} )")
-            total_weighted_sum += (current_length - 1) * current_prob
-            #print (f"Length = {current_length - 1}, Probability: {current_prob}, Total weighted sum: {total_weighted_sum}")
-            continue
-
-        # Push neighbors to the stack with updated probability, length, and visited set
-        for neighbor, prob in graph.get(node, {}).items():
-            stack.append((neighbor, current_prob * prob, current_length + 1, visited))
-
-    return total_weighted_sum
+    # Subtract 1 to exclude the "END" node from the length
+    return expected_length[start] - 1
 
 # Main function
 def main():
@@ -37,7 +35,8 @@ def main():
     with open(file_path, "r") as file:
         graph = json.load(file)
 
-    print(f"The average weighted product of length and probability is: {find_all_paths(graph, 'START', 'END')}")
+    avg_length = calculate_average_length(graph, "START", "END")
+    print(f"The average sentence length is: {avg_length:.2f}")
 
 if __name__ == "__main__":
     main()

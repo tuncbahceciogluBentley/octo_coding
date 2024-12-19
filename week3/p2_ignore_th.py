@@ -1,6 +1,7 @@
 import json
 import sys
 
+THRESHOLD = float(sys.argv[2])
 
 def find_all_paths(graph, start, end):
     # Stack entries: (node, current_prob, current_length, visited_set)
@@ -18,7 +19,6 @@ def find_all_paths(graph, start, end):
         visited = visited | {node}
 
         # If reached the end node, calculate the weighted sum and add it
-        THRESHOLD = float(sys.argv[2])
         if (node == end) or (current_length > 1) and (current_prob * (current_length - 1)) < THRESHOLD:
             #print(f"Pushing ( {current_prob * (current_length - 1)}, {visited}, {node} )")
             total_weighted_sum += (current_length - 1) * current_prob

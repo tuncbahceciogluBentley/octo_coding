@@ -1,0 +1,88 @@
+tunc: If I have a graph containing trafic capacities between cities. Can you find the maximum trafic capacity between two cities?
+
+To find the maximum traffic capacity between two cities in a graph, you can use the **Maximum Flow** algorithm. One of the most common algorithms for this is the **Edmonds-Karp** algorithm, which is an implementation of the Ford-Fulkerson method using BFS.
+
+Here's a step-by-step plan to solve this problem:
+
+1. Parse the graph from the input file.
+2. Implement the Edmonds-Karp algorithm to find the maximum flow between two cities.
+3. Calculate and print the maximum traffic capacity.
+
+Let's implement this in Python:
+
+1. Parse the graph from the input file.
+2. Implement the Edmonds-Karp algorithm.
+3. Calculate and print the maximum traffic capacity.
+
+Here's the code:
+
+```python
+import json
+from collections import deque, defaultdict
+
+def read_graph(file_path):
+    with open(file_path, 'r') as file:
+        graph = json.load(file)
+    return graph
+
+def bfs(capacity, source, sink, parent):
+    visited = set()
+    queue = deque([source])
+    visited.add(source)
+
+    while queue:
+        u = queue.popleft()
+
+        for v in capacity[u]:
+            if v not in visited and capacity[u][v] > 0:
+                queue.append(v)
+                visited.add(v)
+                parent[v] = u
+                if v == sink:
+                    return True
+    return False
+
+def edmonds_karp(graph, source, sink):
+    capacity = defaultdict(lambda: defaultdict(int))
+    for u in graph:
+        for v in graph[u]:
+            capacity[u][v] = graph[u][v]
+
+    parent = {}
+    max_flow = 0
+
+    while bfs(capacity, source, sink, parent):
+        path_flow = float('Inf')
+        s = sink
+
+        while s != source:
+            path_flow = min(path_flow, capacity[parent[s]][s])
+            s = parent[s]
+
+        v = sink
+        while v != source:
+            u = parent[v]
+            capacity[u][v] -= path_flow
+            capacity[v][u] += path_flow
+            v = parent[v]
+
+        max_flow += path_flow
+
+    return max_flow
+
+def main():
+    file_path = 'OCTO-Coding-Challenge-2024-Week-4-Part-2-test-input.txt'  # Change this to your input file path
+    graph = read_graph(file_path)
+    source = 'A'  # Change this to your source city
+    sink = 'Z'    # Change this to your sink city
+
+    max_traffic_capacity = edmonds_karp(graph, source, sink)
+    print(f"The maximum traffic capacity between {source} and {sink} is: {max_traffic_capacity}")
+
+if __name__ == "__main__":
+    main()
+```
+
+Make sure to replace `'OCTO-Coding-Challenge-2024-Week-4-Part-2-test-input.txt'` with the actual path to your input file, and set the `source` and `sink` variables to the cities you want to find the maximum traffic capacity between.
+
+This code will read the graph from the input file, compute the maximum flow using the Edmonds-Karp algorithm, and print the maximum traffic capacity between the specified source and sink cities.

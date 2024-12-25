@@ -55,13 +55,13 @@ def edmonds_karp(graph, source, sink):
 def main():
     parser = argparse.ArgumentParser(description='Process a graph JSON file.')
     parser.add_argument('file_path', type=str, help='Path to the graph JSON file')
-    parser.add_argument('source', type=str, help='Source city')
-    parser.add_argument('sink', type=str, help='Sink city')
+    source = 'A'
+    sink = 'Z'
     args = parser.parse_args()
 
     graph = read_graph(args.file_path)
-    max_traffic_capacity = edmonds_karp(graph, args.source, args.sink)
-    print(f"The maximum traffic capacity between {args.source} and {args.sink} is: {max_traffic_capacity}")
+    max_traffic_capacity = edmonds_karp(graph, source, sink)
+    print(f"The maximum traffic capacity between {source} and {sink} is: {max_traffic_capacity}")
 
 if __name__ == "__main__":
     main()
